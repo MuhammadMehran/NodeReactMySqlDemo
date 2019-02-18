@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
-import { VehicleAndOwnerData, Owner } from './interface';
+import { VehicleAndOwnerData} from './interface';
 import Vehicle from './components/vehicle/Vechicle';
+import Owner from './components/owner/Owner';
 
 export interface AppProps {
 
@@ -12,7 +13,14 @@ export interface AppState {
 }
 
 class App extends Component<AppProps, AppState> {
-  owners: Owner[] = [];
+
+  constructor(props: AppProps) {
+    super(props);
+    this.state = {
+      data: []
+    }
+  }
+
   async componentDidMount() {
     await fetch("http://localhost:3001/vehicles")
       .then(response => {
@@ -26,56 +34,62 @@ class App extends Component<AppProps, AppState> {
         data.forEach((element: any) => {
           element = { ...element, signal: false }
         });
-
-        //get all uniqe owner id's
-        const uniqueOwnerTags: number[] = [];
-        data.map((item: VehicleAndOwnerData) => {
-          if (uniqueOwnerTags.indexOf(item.ownerId) === -1) {
-            uniqueOwnerTags.push(item.ownerId)
-            this.owners.push({
-              ownerId: item.ownerId,
-              owner: item.owner,
-              ownerAddess: item.ownerAddess
-            })
-          }
-        });
-        this.setState(data);
+        this.setState({ data });
       });
   }
 
   render() {
-    let listOwnersWithVehicles: any[] = [];
+
+    //get all uniqe owners' ids
+    const ownerIds: Set<number> = new Set([]);
+    this.state.data.forEach((item: VehicleAndOwnerData) => {
+      ownerIds.add(item.user_id);
+    });
+
+    //add all owners in a list
+
     // Group the data by owners and their vehicles
-    if (this.state.data && this.owners) {
-      listOwnersWithVehicles = this.owners.map((item: Owner) => {
+    let listOwnersWithVehicles: any[] = [];
+    ownerIds.forEach((ownerId: number) => {
 
-        // Get only that specific owner's vehicles
-        const vehicles = this.state.data.map((dataEntry) => {
-          if (dataEntry.ownerId == item.ownerId) {
-            return (
-              <Vehicle
-                vin={dataEntry.vin}
-                regNumber={dataEntry.regNumber}
-                signal={dataEntry.signal} />
-            )
-          }
-        });
+      // List of data entries of vehicles owned by specific owner
+      const entriesOfOwner = this.state.data.filter(dataEntry => {
+        return dataEntry.user_id == ownerId;
+      })
 
-        // Generate owner and show below all his/hers owned vehicles
-        return ([
-          <li key={item.ownerId} className="owner">
-            {item.ownerId}
-            {item.owner}
-            {item.ownerAddess}
-          </li>,
-          (vehicles)
-        ]);
+      // Get only specific owner's vehicles
+      const vehicles = entriesOfOwner.map((dataEntry) => {
+        return (
+          <Vehicle
+            key={dataEntry.vin}
+            vin={dataEntry.vin}
+            regNumber={dataEntry.reg_number}
+            signal={dataEntry.signal} />
+        )
       });
-    }
+
+      // Generate owner and show below owned vehicles
+      const specificOwner = this.state.data.find((dataEntry: VehicleAndOwnerData) => {
+        return dataEntry.user_id == ownerId;
+      });
+
+      if (specificOwner) {
+        listOwnersWithVehicles.push(
+          <div key={specificOwner.user_id}>
+            <Owner
+            id={specificOwner.user_id}
+            name={specificOwner.customer_name}
+            address={specificOwner.customer_address}
+            />
+            {vehicles}
+          </div>
+        )
+      }
+    });
 
     return (
       <div className="App">
-        {this.state.data && listOwnersWithVehicles}
+        {listOwnersWithVehicles}
       </div>
     );
   }

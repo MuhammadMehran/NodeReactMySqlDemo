@@ -8,7 +8,7 @@ export interface VehicleProps{
 }
 const Vehicle: React.SFC<VehicleProps> = (props) => {
     return(
-        <div>
+        <div className="Vehicle">
             {props.vin}
             {props.regNumber}
             {props.signal}
