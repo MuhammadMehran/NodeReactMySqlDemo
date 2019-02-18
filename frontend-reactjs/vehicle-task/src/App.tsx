@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, ChangeEvent } from 'react';
 import './App.css';
 import { VehicleAndOwnerData, SimulatedSignal } from './interface';
 import Vehicle from './components/vehicle/Vechicle';
@@ -10,6 +10,9 @@ export interface AppProps {
 
 export interface AppState {
   data: VehicleAndOwnerData[];
+  filterByName: string;
+  onlineStatusDisabled: boolean;
+  onlineStatus: boolean;
 }
 
 class App extends Component<AppProps, AppState> {
@@ -17,7 +20,10 @@ class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      filterByName: "",
+      onlineStatusDisabled: true,
+      onlineStatus: true
     }
   }
 
@@ -79,15 +85,43 @@ class App extends Component<AppProps, AppState> {
       })
 
       // Get only specific owner's vehicles
+      if (this.state.filterByName !== "") {
+        if (!entriesOfOwner[0].customer_name.toLowerCase().includes(this.state.filterByName.toLowerCase())) {
+          return;
+        }
+      }
       const vehicles = entriesOfOwner.map((dataEntry) => {
-        return (
-          <Vehicle
-            key={dataEntry.vin}
-            vin={dataEntry.vin}
-            regNumber={dataEntry.reg_number}
-            signal={dataEntry.signal} />
-        )
+
+        if (this.state.onlineStatusDisabled) {
+          return (
+            <Vehicle
+              key={dataEntry.vin}
+              vin={dataEntry.vin}
+              regNumber={dataEntry.reg_number}
+              signal={dataEntry.signal} />
+          )
+        } else {
+          // Filter Vehicles according to the status provided
+          if (this.state.onlineStatus == dataEntry.signal) {
+            return (
+              <Vehicle
+                key={dataEntry.vin}
+                vin={dataEntry.vin}
+                regNumber={dataEntry.reg_number}
+                signal={dataEntry.signal} />
+            )
+
+          } else {
+            return;
+          }
+        }
+
       });
+
+      // When there are no vehicles to show for the specific customer, don't show anything at all
+      if (vehicles.length == 0) {
+        return;
+      }
 
       // Find owner's details
       const specificOwner = entriesOfOwner.find((dataEntry: VehicleAndOwnerData) => {
@@ -111,10 +145,43 @@ class App extends Component<AppProps, AppState> {
 
     return (
       <div className="App">
+        <div>
+          <input
+            type="text"
+            placeholder="Filter by company name"
+            name="Filter By Name"
+            value={this.state.filterByName}
+            onChange={this.onFilterByNameChange} />
+
+          <div><input
+            name="Online Status Disabled"
+            type="checkbox"
+            checked={this.state.onlineStatusDisabled}
+            onChange={this.handleOnlineStatusChange} /> Disabled Filter By Online Status
+            </div>
+
+          <div onChange={this.onOnlineStatusChange}>
+            <input type="radio" value="ONLINE" name="Online Status" disabled={this.state.onlineStatusDisabled} checked={this.state.onlineStatus} /> Online
+            <input type="radio" value="OFFLINE" name="Online Status" disabled={this.state.onlineStatusDisabled} /> Offline
+          </div>
+        </div>
         {listOwnersWithVehicles}
       </div>
     );
   }
+
+  onFilterByNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ filterByName: event.target.value });
+  }
+
+  handleOnlineStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ onlineStatusDisabled: event.target.checked })
+  }
+
+  onOnlineStatusChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ onlineStatus: event.target.value == "ONLINE" });
+  }
+
 }
 
 export default App;
