@@ -43,7 +43,7 @@ class App extends Component<AppProps, AppState> {
         this.setState({ data: dataWithSignal });
       });
     this.fetchSignals();
-    setInterval(this.fetchSignals, 3000)
+    setInterval(this.fetchSignals, 60000)
   }
 
   fetchSignals = async () => {
@@ -117,12 +117,11 @@ class App extends Component<AppProps, AppState> {
         }
 
       });
-
+      
       // When there are no vehicles to show for the specific customer, don't show anything at all
-      if (vehicles.length == 0) {
+      if (vehicles[0] == undefined) {
         return;
       }
-
       // Find owner's details
       const specificOwner = entriesOfOwner.find((dataEntry: VehicleAndOwnerData) => {
         return dataEntry.user_id == ownerId;
