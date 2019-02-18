@@ -1,15 +1,43 @@
 // Require packages and set the port
 const express = require('express');
-const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const port = 3002;
 const app = express();
 
+app.use(cors())
+
 app.get('/', (request, response) => {
-    const randomValue = Math.random() >= 0.5;
-    response.send({
-        signal: randomValue
-    })
+    response.send([
+        {
+            vin: "YS2R4X20005399401",
+            signal: Math.random() >= 0.5
+        },
+        {
+            vin: "VLUR4X20009093588",
+            signal: Math.random() >= 0.5
+        },
+        {
+            vin: "VLUR4X20009048066",
+            signal: Math.random() >= 0.5
+        },
+        {
+            vin: "YS2R4X20005388011",
+            signal: Math.random() >= 0.5
+        },
+        {
+            vin: "YS2R4X20005387949",
+            signal: Math.random() >= 0.5
+        },
+        {
+            vin: "YS2R4X20005387765",
+            signal: Math.random() >= 0.5
+        },
+        {
+            vin: "YS2R4X20005387055",
+            signal: Math.random() >= 0.5
+        }
+    ])
 });
 
 // Start the server

@@ -9,9 +9,8 @@ export interface OwnerProps{
 const Owner: React.SFC<OwnerProps> = (props) => {
     return(
         <div className="Owner">
-            {props.id}
-            {props.name}
-            {props.address}
+            <label>{props.name}</label>
+            <label>{props.address}</label>
         </div>
     )
 };

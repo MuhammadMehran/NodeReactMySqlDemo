@@ -13,3 +13,8 @@ export interface Owner {
     customer_name: string;
     customer_address: string;
 }
+
+export interface SimulatedSignal {
+    vin: string;
+    signal: boolean
+}

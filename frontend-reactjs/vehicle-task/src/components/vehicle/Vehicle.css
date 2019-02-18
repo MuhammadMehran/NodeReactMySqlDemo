@@ -3,4 +3,27 @@
     flex-direction: row;
     width: '100%';
     background-color: burlywood;
+    justify-content: space-around;
+    align-items: center;
+    min-height: 80px;
+}
+
+.Vehicle .green {
+    width: 30px;
+    height: 30px;
+    background-color: greenyellow;
+    border-radius: 30px;
+
+}
+
+.Vehicle .red {
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    border-radius: 30px;
+}
+
+
+.Vehicle label {
+    font-size: 20px;
 }

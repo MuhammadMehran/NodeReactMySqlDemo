@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { VehicleAndOwnerData} from './interface';
+import { VehicleAndOwnerData, SimulatedSignal } from './interface';
 import Vehicle from './components/vehicle/Vechicle';
 import Owner from './components/owner/Owner';
 
@@ -31,10 +31,33 @@ class App extends Component<AppProps, AppState> {
         }
       })
       .then(data => {
-        data.forEach((element: any) => {
-          element = { ...element, signal: false }
-        });
-        this.setState({ data });
+        const dataWithSignal = data.map((dataEntry: VehicleAndOwnerData) => {
+          return Object.assign(dataEntry, { signal: false })
+        })
+        this.setState({ data: dataWithSignal });
+      });
+    this.fetchSignals();
+    setInterval(this.fetchSignals, 3000)
+  }
+
+  fetchSignals = async () => {
+    await fetch('http://localhost:3002/', { method: "GET" })
+      .then((response) => response.json())
+      .then((responseData) => {
+
+        //Looping through vehicle date and filling in the signal values accordingly to the response
+        const dataWithSignal = this.state.data.map((dataEntry: VehicleAndOwnerData) => {
+          const result = responseData.find((item: SimulatedSignal) => {
+            return item.vin == dataEntry.vin;
+          })
+
+          return Object.assign(dataEntry, { signal: result.signal })
+        })
+        this.setState({ data: dataWithSignal });
+
+      })
+      .catch((error) => {
+        console.error("ERRO FETCHING SIGNALS");
       });
   }
 
@@ -45,8 +68,6 @@ class App extends Component<AppProps, AppState> {
     this.state.data.forEach((item: VehicleAndOwnerData) => {
       ownerIds.add(item.user_id);
     });
-
-    //add all owners in a list
 
     // Group the data by owners and their vehicles
     let listOwnersWithVehicles: any[] = [];
@@ -68,18 +89,19 @@ class App extends Component<AppProps, AppState> {
         )
       });
 
-      // Generate owner and show below owned vehicles
-      const specificOwner = this.state.data.find((dataEntry: VehicleAndOwnerData) => {
+      // Find owner's details
+      const specificOwner = entriesOfOwner.find((dataEntry: VehicleAndOwnerData) => {
         return dataEntry.user_id == ownerId;
       });
 
+      // Add the required components in the render list
       if (specificOwner) {
         listOwnersWithVehicles.push(
           <div key={specificOwner.user_id}>
             <Owner
-            id={specificOwner.user_id}
-            name={specificOwner.customer_name}
-            address={specificOwner.customer_address}
+              id={specificOwner.user_id}
+              name={specificOwner.customer_name}
+              address={specificOwner.customer_address}
             />
             {vehicles}
           </div>
