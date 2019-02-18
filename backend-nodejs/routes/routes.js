@@ -5,7 +5,7 @@ const router = app => {
     // Display all users
     app.get('/vehicles', (request, response) => {
         pool.query(
-            `SELECT vin, reg_number, Users.customer_name, Users.customer_address FROM Vehicles 
+            `SELECT vin, reg_number, Users.user_id, Users.customer_name, Users.customer_address FROM Vehicles 
             INNER JOIN Users
             ON Users.user_id = Vehicles.car_owner_id;`,
             (error, result) => {
@@ -21,7 +21,7 @@ const router = app => {
     app.get('/users/:id', (request, response) => {
         const id = request.params.id;
         pool.query(
-                `SELECT vin, reg_number, Users.customer_name, Users.customer_address FROM Vehicles 
+                `SELECT vin, reg_number, Users.user_id, Users.customer_name, Users.customer_address FROM Vehicles 
                 INNER JOIN Users
                 ON Users.user_id = Vehicles.car_owner_id
                 WHERE Users.user_id = ?;`, id,

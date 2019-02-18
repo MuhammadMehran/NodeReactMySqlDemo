@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js & node vehicle-simulator/app-simulator.js &"
+    "start": "fuser -k 3002/tcp & fuser -k 3001/tcp & node app.js & node vehicle-simulator/app-simulator.js &"
   },
   "author": "Ljubomir Sinadinovski",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "mysql": "^2.16.0",
     "request": "^2.88.0"
