@@ -1,0 +1,18 @@
+Deployment steps
+
+I am going to explain how to deploy this locally and run all instances on single (Linux) machine. If you are not deploying everything on single machine, you shouldn't use these deployment instructions:
+
+Make sure you are not running anything on the ports that we are going to use (3000, 3001, 3002) with the process killing command: sudo fuser -k 300x/tcp where x needs to be replaced with the port number. To enforce this I have added these commands in the startup command of the backend, where I am killing process running on ports 3001 and 3002.
+
+Clone the repository from GitHub, or simply download it and unpack it. Navigate to interview-demo directory in Terminal.
+
+1. The first step is to create and fill in the database. In order to do this you should have access to mysql and run the commands from the file: interview-demo/mysql-database/database_code.sql
+This will ensure that we have the required database set up. You can also insert the data through the dump files that I have provided
+
+2. Next we need to start up the APIs by navigating to: interview-demo/backend-nodejs
+and run the command: npm install & npm start
+
+3. Now its time for the frontend, navigate to: interview-demo/frontend-reactjs/vehicle-task
+and run the command: npm install & npm start
+
+If everything goes as planned, when you navigate to http://localhost:3000/ you should see the frontend with the final result.

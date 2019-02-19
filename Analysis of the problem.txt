@@ -1,0 +1,25 @@
+Analysis of the problem
+
+This problem is designed to test the most important aspects of programming. There are multiple architectures that can be implemented in order to get the required results, therefore there is no right solution.
+
+My understanding lead me to the conclusion that I need:
+
+1. Database for storing the data - I chose MySql because I am most comfortable with it. I have been working directly through Terminal. There are better IDEs instead of using Terminal, like Data Grip, but I came to conclusion that the database design is fairly simple and it doesn't worth the time for setting up (I was working on a freshly installed version of Linux Mint).
+
+2. Backend connected with the Database as API - I chose NodeJS with express because it is fast and easy to setup. Express gave me access to the "middleware" architecture, therefore it was simple to add extra's (like CORS policy). NodeJS is fast and powerful technology, it uses a single process to handle multiple requests. A single process tends to use less memory than multiple processes.
+
+3. Another API (microservice) for the Random Signal part - I made another, separate, NodeJS backend that returns array with VIN and online status for every vehicle. Online status is generated randomly.
+
+4. Frontend that interacts with both APIs - Because I have some experience with ReactJS I chose this technology. The desing (in CSS) is poorly implemented, however due to time constraints it was more important to show what I know and implement the requirements.
+
+I am aware that the entities above are not implemented perfectly and can be refactored and optimized better.
+
+This solution can be deployed on regular servers or the cloud. Therefore, there are couple of ways to deploy this, different architectures. Because I am most familiar with AWS (Amazon Web Services) I am going to talk about possible solution on AWS. 
+
+My opinion is that every entyty above needs to be in its own EC2 instance, while being connected in the same private cloud network. With this implementation we have reliable and scalable solution. If one instance is not available AWS will make a new one automatically, however only of the overheated instance (for example only one of the APIs). EC2 instance for every entity will give us modularity. 
+
+If we set all of the entities in one EC2 instance, the scalability scenario will repeat itself, however if the backend is DDoSed it will take down the whole EC2 instance and AWS will create a new one, made of all entities. This will be unreasonable waste of resources.
+
+The solution doesn't have to be dockerized and implemented on EC2 instances, it can be simply uploaded on S3 buckets.
+
+Is it possible to implement Serverless architecture? Of course, but only for the backend API services, according to my understanding. Instead of having backends, we can have AWS Lambda functions that will interact with the database and frontend. I don't have experience with Lambda functions so I really can't explain this further.
